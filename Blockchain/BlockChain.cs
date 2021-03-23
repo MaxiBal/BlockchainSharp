@@ -7,6 +7,9 @@ using System.Linq;
 
 namespace Blockchain
 {
+    /// <summary>
+    /// A readonly Collection to hold Blocks
+    /// </summary>
     public class BlockChain : IReadOnlyCollection<string>
     {
         private readonly LinkedList<string> Blocks;
