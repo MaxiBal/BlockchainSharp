@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Xunit;
 
 using Blockchain;
@@ -12,7 +12,7 @@ namespace BlockchainTest
         [Fact]
         public void BlockAndFirstBlockInChainAreNotEqual()
         {
-            BlockChain chain = new("test seed");
+            BlockChain chain = new("test prefix");
             IBlock block = new Block
             {
                 Data = "test block",
@@ -27,7 +27,7 @@ namespace BlockchainTest
         [Fact]
         public void ChainShouldNotMutateBlock()
         {
-            BlockChain chain = new("test seed");
+            BlockChain chain = new("test prefix");
             string blockData = "test block";
             IBlock block = new Block
             {
@@ -43,7 +43,7 @@ namespace BlockchainTest
         [Fact]
         public void ChainIsEmpty()
         {
-            BlockChain chain = new("test seed");
+            BlockChain chain = new("test prefix");
 
             Assert.True(chain.Empty);
         }
@@ -51,7 +51,7 @@ namespace BlockchainTest
         [Fact]
         public void ChainIsNotEmpty()
         {
-            BlockChain chain = new("test seed");
+            BlockChain chain = new("test prefix");
             chain.Add(new Block
             {
                 Data = "test",
@@ -64,7 +64,7 @@ namespace BlockchainTest
         [Fact]
         public void BlockAfterFirstBlockIsNotEqual()
         {
-            BlockChain chain = new("test seed");
+            BlockChain chain = new("test prefix");
             IBlock block1 = new Block
             {
                 Data = "test block 1",
@@ -86,7 +86,7 @@ namespace BlockchainTest
         public void HashesDontRepeat()
         {
             List<string> hashes = new();
-            BlockChain chain = new("test seed");
+            BlockChain chain = new("test prefix");
 
             chain.Add(new Block
             {
@@ -112,7 +112,7 @@ namespace BlockchainTest
         public void HashesDontRepeatWithSameData()
         {
             List<string> hashes = new();
-            BlockChain chain = new("test seed");
+            BlockChain chain = new("test prefix");
 
             string blockData = "testing123";
 
@@ -134,6 +134,121 @@ namespace BlockchainTest
 
                 hashes.Add(chain[i]);
             }
+        }
+
+        [Fact]
+        public void ChainClears()
+        {
+            BlockChain chain = new("prefix");
+            for (int i = 0; i < 10; i++)
+            {
+                chain.Add(new Block
+                {
+                    Data = i.ToString()
+                });
+            }
+            chain.Clear();
+            Assert.True(chain.Empty);
+        }
+
+        [Fact]
+        public void CheckEqualsFunction()
+        {
+            BlockChain chain = new("test prefix");
+
+            Block end = new()
+            {
+                Data = "10"
+            };
+
+            for (int i = 0; i < 10; i++)
+            {
+                chain.Add(new Block
+                {
+                    Data = i.ToString()
+                });
+            }
+
+            chain.Add(end);
+
+            Assert.True(chain.Equals(end, 10));
+        }
+
+        [Fact]
+        public void ChainContainsIsTrue()
+        {
+            BlockChain chain = new("test prefix");
+
+            Block contain = new()
+            {
+                Data = "1000"
+            };
+
+            for (int i = 0; i < 10; i++)
+            {
+                chain.Add(new Block
+                {
+                    Data = i.ToString()
+                });
+            }
+
+            chain.Add(contain);
+
+            Assert.True(chain.Contains(contain));
+        }
+
+        [Fact]
+        public void ChainContainsIsFalse()
+        {
+            BlockChain chain = new("test prefix");
+
+            Block contain = new()
+            {
+                Data = "1000"
+            };
+
+            for (int i = 0; i < 10; i++)
+            {
+                chain.Add(new Block
+                {
+                    Data = i.ToString()
+                });
+            }
+
+            Assert.False(chain.Contains(contain));
+        }
+
+        [Fact]
+        public void LongData()
+        {
+            BlockChain chain = new("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
+            Block b = new()
+            {
+                Data = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            };
+            chain.Add(b);
+        }
+
+        [Fact]
+        public void UnicodeData()
+        {
+            BlockChain chain = new("test seed");
+            Block b = new()
+            {
+                Data = "ьяаоьяаоьяаоь"
+            };
+            chain.Add(b);
         }
     }
 }

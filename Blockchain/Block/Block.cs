@@ -9,7 +9,6 @@ namespace Blockchain.Block
 {
     public class Block : IBlock
     {
-        public string DataHash { get; private set; }
         public string PreviousHash { get; set; }
         public string Data { get; set; }
         public long TimeStamp { get; init; }
